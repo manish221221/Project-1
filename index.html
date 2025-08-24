@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Router Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <h1 class="header__title">AI Router</h1>
+                <nav class="header__nav">
+                    <button class="btn btn--outline btn--sm" id="theme-toggle">🌙</button>
+                    <div class="header__user">
+                        <span id="user-name">John Doe</span>
+                        <button class="btn btn--outline btn--sm" id="logout-btn">Logout</button>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <nav class="sidebar__nav">
+                <button class="sidebar__link active" data-view="dashboard">
+                    📊 Dashboard
+                </button>
+                <button class="sidebar__link" data-view="connections">
+                    🔗 Connections
+                </button>
+                <button class="sidebar__link" data-view="pools">
+                    👥 Pools
+                </button>
+                <button class="sidebar__link" data-view="chat">
+                    💬 Chat
+                </button>
+                <button class="sidebar__link" data-view="usage">
+                    📈 Usage
+                </button>
+                <button class="sidebar__link" data-view="settings">
+                    ⚙️ Settings
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="view active">
+                <div class="view__header">
+                    <h2>Dashboard</h2>
+                    <p class="view__subtitle">Overview of your AI routing activity</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card__icon">🔗</div>
+                        <div class="stat-card__content">
+                            <h3>Active Connections</h3>
+                            <div class="stat-card__value" id="active-connections">3</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__icon">👥</div>
+                        <div class="stat-card__content">
+                            <h3>Pool Memberships</h3>
+                            <div class="stat-card__value" id="pool-memberships">2</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__icon">💰</div>
+                        <div class="stat-card__content">
+                            <h3>Monthly Cost</h3>
+                            <div class="stat-card__value" id="monthly-cost">$45.23</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__icon">📊</div>
+                        <div class="stat-card__content">
+                            <h3>Tokens Used</h3>
+                            <div class="stat-card__value" id="tokens-used">125.2K</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-grid">
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Usage Trends</h3>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="usage-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Provider Distribution</h3>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="provider-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card">
+                    <div class="card__body">
+                        <h3>Recent Activity</h3>
+                        <div class="activity-list" id="activity-list">
+                            <!-- Activity items will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connections View -->
+            <div id="connections-view" class="view">
+                <div class="view__header">
+                    <h2>API Connections</h2>
+                    <button class="btn btn--primary" id="add-connection-btn">Add Connection</button>
+                </div>
+
+                <div class="connections-grid" id="connections-grid">
+                    <!-- Connection cards will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Pools View -->
+            <div id="pools-view" class="view">
+                <div class="view__header">
+                    <h2>Resource Pools</h2>
+                    <button class="btn btn--primary" id="create-pool-btn">Create Pool</button>
+                </div>
+
+                <div class="pools-grid" id="pools-grid">
+                    <!-- Pool cards will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Chat View -->
+            <div id="chat-view" class="view">
+                <div class="view__header">
+                    <h2>AI Chat</h2>
+                    <div class="chat-controls">
+                        <select class="form-control" id="model-select">
+                            <option value="auto">Auto-route</option>
+                            <option value="gpt-4">GPT-4</option>
+                            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                            <option value="claude-3-opus">Claude 3 Opus</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="chat-messages">
+                        <!-- Chat messages will be inserted here -->
+                    </div>
+                    <div class="chat-input">
+                        <div class="chat-input__controls">
+                            <input type="text" class="form-control" id="chat-input" placeholder="Type your message...">
+                            <button class="btn btn--primary" id="send-btn">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usage View -->
+            <div id="usage-view" class="view">
+                <div class="view__header">
+                    <h2>Usage Analytics</h2>
+                    <div class="usage-filters">
+                        <select class="form-control" id="usage-period">
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month" selected>This Month</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="usage-summary" id="usage-summary">
+                    <!-- Usage summary will be inserted here -->
+                </div>
+
+                <div class="usage-details">
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Detailed Usage</h3>
+                            <div class="usage-table-container">
+                                <table class="usage-table" id="usage-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Provider</th>
+                                            <th>Model</th>
+                                            <th>Tokens</th>
+                                            <th>Cost</th>
+                                            <th>Latency</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Usage data will be inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings View -->
+            <div id="settings-view" class="view">
+                <div class="view__header">
+                    <h2>Settings</h2>
+                </div>
+
+                <div class="settings-sections">
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Routing Preferences</h3>
+                            <div class="form-group">
+                                <label class="form-label">Default Routing Strategy</label>
+                                <select class="form-control" id="routing-strategy">
+                                    <option value="cost">Lowest Cost</option>
+                                    <option value="performance" selected>Best Performance</option>
+                                    <option value="balanced">Balanced</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Retry Attempts</label>
+                                <input type="number" class="form-control" id="retry-attempts" value="3" min="1" max="10">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Usage Limits</h3>
+                            <div class="form-group">
+                                <label class="form-label">Daily Token Limit</label>
+                                <input type="number" class="form-control" id="daily-token-limit" value="100000">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Monthly Cost Limit ($)</label>
+                                <input type="number" class="form-control" id="monthly-cost-limit" value="500" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Notifications</h3>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <input type="checkbox" id="usage-alerts" checked> Usage alerts
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <input type="checkbox" id="error-notifications" checked> Error notifications
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn--primary" id="save-settings-btn">Save Settings</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add Connection Modal -->
+    <div id="add-connection-modal" class="modal hidden">
+        <div class="modal__overlay">
+            <div class="modal__content">
+                <div class="modal__header">
+                    <h3>Add New Connection</h3>
+                    <button class="modal__close">&times;</button>
+                </div>
+                <div class="modal__body">
+                    <div class="form-group">
+                        <label class="form-label">Provider</label>
+                        <select class="form-control" id="connection-provider">
+                            <option value="openai">OpenAI</option>
+                            <option value="openrouter">OpenRouter</option>
+                            <option value="anthropic">Anthropic</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Label</label>
+                        <input type="text" class="form-control" id="connection-label" placeholder="My OpenAI Key">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">API Key</label>
+                        <input type="password" class="form-control" id="connection-key" placeholder="sk-...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Pool (Optional)</label>
+                        <select class="form-control" id="connection-pool">
+                            <option value="">Personal</option>
+                            <option value="study-group">Study Group</option>
+                            <option value="work-team">Work Team</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal__footer">
+                    <button class="btn btn--outline" id="cancel-connection-btn">Cancel</button>
+                    <button class="btn btn--primary" id="save-connection-btn">Add Connection</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Pool Modal -->
+    <div id="create-pool-modal" class="modal hidden">
+        <div class="modal__overlay">
+            <div class="modal__content">
+                <div class="modal__header">
+                    <h3>Create New Pool</h3>
+                    <button class="modal__close">&times;</button>
+                </div>
+                <div class="modal__body">
+                    <div class="form-group">
+                        <label class="form-label">Pool Name</label>
+                        <input type="text" class="form-control" id="pool-name" placeholder="Study Group">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" id="pool-description" placeholder="Shared AI resources for our study group"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Daily Token Limit</label>
+                        <input type="number" class="form-control" id="pool-token-limit" value="50000">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Daily Cost Limit ($)</label>
+                        <input type="number" class="form-control" id="pool-cost-limit" value="25" step="0.01">
+                    </div>
+                </div>
+                <div class="modal__footer">
+                    <button class="btn btn--outline" id="cancel-pool-btn">Cancel</button>
+                    <button class="btn btn--primary" id="save-pool-btn">Create Pool</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loading" class="loading hidden">
+        <div class="loading__spinner"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
